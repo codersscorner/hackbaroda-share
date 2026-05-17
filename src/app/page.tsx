@@ -38,10 +38,31 @@ export default function Page() {
         backgroundColor: null,
         logging: false,
       });
-      const a = document.createElement("a");
-      a.download = `hackbaroda-2026-${Date.now()}.png`;
-      a.href = canvas.toDataURL("image/png");
-      a.click();
+      
+      // Convert canvas to blob and download
+      canvas.toBlob((blob: Blob) => {
+        if (!blob) {
+          setShareMsg("❌ Failed to generate image. Please try again.");
+          setTimeout(() => setShareMsg(""), 4000);
+          return;
+        }
+        
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `hackbaroda-2026-${Date.now()}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        
+        setShareMsg("✓ Poster downloaded successfully!");
+        setTimeout(() => setShareMsg(""), 3000);
+      });
+    } catch (error) {
+      console.error("Download failed:", error);
+      setShareMsg("❌ Download failed. Please try again or check your browser console.");
+      setTimeout(() => setShareMsg(""), 4000);
     } finally {
       setExporting(false);
     }

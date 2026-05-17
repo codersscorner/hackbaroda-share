@@ -28,9 +28,27 @@ export default function Page() {
     if (!posterRef.current) return;
     setExporting(true);
     try {
-      const { default: html2canvas } = await import(
-        "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.esm.js" as string
-      );
+      // Load html2canvas from window if available, otherwise fetch from CDN
+      let html2canvas: any;
+      
+      if (typeof window !== "undefined" && (window as any).html2canvas) {
+        html2canvas = (window as any).html2canvas;
+      } else {
+        // Dynamically load from CDN
+        const script = document.createElement("script");
+        script.src = "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js";
+        script.async = true;
+        
+        await new Promise((resolve, reject) => {
+          script.onload = () => {
+            html2canvas = (window as any).html2canvas;
+            resolve(true);
+          };
+          script.onerror = reject;
+          document.head.appendChild(script);
+        });
+      }
+      
       const canvas = await html2canvas(posterRef.current, {
         scale: 2,
         useCORS: true,

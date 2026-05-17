@@ -38,10 +38,31 @@ export default function Page() {
         backgroundColor: null,
         logging: false,
       });
-      const a = document.createElement("a");
-      a.download = `hackbaroda-2026-${Date.now()}.png`;
-      a.href = canvas.toDataURL("image/png");
-      a.click();
+      
+      // Convert canvas to blob and download
+      canvas.toBlob((blob: Blob) => {
+        if (!blob) {
+          setShareMsg("❌ Failed to generate image. Please try again.");
+          setTimeout(() => setShareMsg(""), 4000);
+          return;
+        }
+        
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `hackbaroda-2026-${Date.now()}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        
+        setShareMsg("✓ Poster downloaded successfully!");
+        setTimeout(() => setShareMsg(""), 3000);
+      });
+    } catch (error) {
+      console.error("Download failed:", error);
+      setShareMsg("❌ Download failed. Please try again or check your browser console.");
+      setTimeout(() => setShareMsg(""), 4000);
     } finally {
       setExporting(false);
     }
@@ -50,20 +71,50 @@ export default function Page() {
   const getShareText = () =>
     SHARE_TEXT.replace("{LEADER}", leader || "my team leader").replace("{TEAM}", team || "our team");
 
-  const handleShare = (platform: string) => {
-    const text = encodeURIComponent(getShareText());
-    const url = encodeURIComponent("https://hackbaroda.vercel.app");
-    const links: Record<string, string> = {
-      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${url}&summary=${text}`,
-      twitter: `https://twitter.com/intent/tweet?text=${text}&url=${url}`,
-    };
-    if (platform === "instagram") {
-      navigator.clipboard.writeText(getShareText());
-      setShareMsg("✓ Caption copied! Paste it in your Instagram story.");
+  const handleShare = async (platform: string) => {
+    const text = getShareText();
+    const encodedText = encodeURIComponent(text);
+    const encodedUrl = encodeURIComponent("https://hackbaroda.vercel.app");
+
+    if (platform === "linkedin") {
+      // LinkedIn only supports URL sharing
+      await navigator.clipboard.writeText(text);
+
+      window.open(
+        `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`,
+        "_blank",
+        "noopener,noreferrer,width=700,height=600"
+      );
+
+      setShareMsg("✓ Caption copied! Paste it into your LinkedIn post.");
       setTimeout(() => setShareMsg(""), 4000);
       return;
     }
-    window.open(links[platform], "_blank", "noopener,noreferrer,width=600,height=500");
+
+    if (platform === "twitter") {
+      window.open(
+        `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`,
+        "_blank",
+        "noopener,noreferrer,width=700,height=600"
+      );
+      return;
+    }
+
+    if (platform === "instagram") {
+      try {
+        await navigator.clipboard.writeText(text);
+
+        setShareMsg(
+          "✓ Caption copied! Upload the downloaded poster to Instagram Story/Post and paste the caption."
+        );
+
+        setTimeout(() => setShareMsg(""), 5000);
+      } catch {
+        setShareMsg("Failed to copy caption.");
+      }
+
+      return;
+    }
   };
 
   return (
@@ -93,16 +144,16 @@ export default function Page() {
             >
               You've been Selected<br />For HackBaroda.
             </h1>
-           
+
           </section>
 
-        
+
 
 
 
 
           <section className="mb-6">
-            
+
 
             <div className="bg-[rgba(255,252,240,0.92)] border border-[#d9c49a] rounded-xl p-6 shadow-md">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
@@ -129,11 +180,10 @@ export default function Page() {
                 <label className="flex flex-col gap-2 cursor-pointer sm:col-span-2">
                   <span className="text-[#b8860b] text-[9px] tracking-[3px] uppercase font-sans">Your Photo</span>
                   <div
-                    className={`border border-dashed rounded-md px-4 py-3 text-center text-sm font-sans transition-all ${
-                      photo
-                        ? "border-[#b8860b] bg-[rgba(184,134,11,0.08)] text-[#b8860b]"
-                        : "border-[#d9c49a] bg-white text-[#c4a97a]"
-                    }`}
+                    className={`border border-dashed rounded-md px-4 py-3 text-center text-sm font-sans transition-all ${photo
+                      ? "border-[#b8860b] bg-[rgba(184,134,11,0.08)] text-[#b8860b]"
+                      : "border-[#d9c49a] bg-white text-[#c4a97a]"
+                      }`}
                   >
                     {photo ? "✓ Photo ready" : "Click to upload"}
                     <input type="file" accept="image/*" onChange={handlePhoto} className="hidden" />
@@ -145,11 +195,10 @@ export default function Page() {
                 <button
                   onClick={handleDownload}
                   disabled={exporting}
-                  className={`px-6 py-2.5 rounded-md text-xs tracking-[2px] uppercase font-sans font-bold transition-all ${
-                    exporting
-                      ? "bg-[#d9c49a] text-[#8a6030] cursor-not-allowed"
-                      : "bg-[#2a0e00] text-[#d4a017] hover:bg-[#3d1500]"
-                  }`}
+                  className={`px-6 py-2.5 rounded-md text-xs tracking-[2px] uppercase font-sans font-bold transition-all ${exporting
+                    ? "bg-[#d9c49a] text-[#8a6030] cursor-not-allowed"
+                    : "bg-[#2a0e00] text-[#d4a017] hover:bg-[#3d1500]"
+                    }`}
                 >
                   {exporting ? "Exporting…" : "⬇ Download Poster"}
                 </button>
@@ -291,7 +340,7 @@ export default function Page() {
             </div>
             <div>
               <p className="text-[#b8860b] mb-1">Co-Organizer</p>
-              <p>Dhruv Desai</p>
+              <p>Mann Dosi</p>
               <p>+91 63778 66464</p>
             </div>
           </div>

@@ -37,9 +37,9 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   icons: {
-    icon: "/logo.png",
-    shortcut: "/logo.png",
-    apple: "/logo.png",
+    icon: "/hb.png",
+    shortcut: "/hb.png",
+    apple: "/hb.png",
   },
   openGraph: {
     title: "Coder's Corner | India's Developer Community",
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
       "Where college developers build real projects. Join hackathons, workshops, and freelance with top companies.",
     images: [
       {
-        url: "/logo.png",
+        url: "/hb.png",
         width: 1200,
         height: 630,
         alt: "Coder's Corner — India's Developer Community",
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
     title: "Coder's Corner | Build Real Projects",
     description:
       "India's freelancing community powered by top college developers. Real work. Real skills. Real growth.",
-    images: ["/logo.png"],
+    images: ["/hb.png"],
     creator: "@coderscorner_",
   },
   robots: {

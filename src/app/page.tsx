@@ -31,37 +31,27 @@ export default function Page() {
       const { default: html2canvas } = await import(
         "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.esm.js" as string
       );
-      const canvas = await (html2canvas as Function)(posterRef.current, {
-        scale: 3,
+      const canvas = await html2canvas(posterRef.current, {
+        scale: 2,
         useCORS: true,
         allowTaint: true,
         backgroundColor: null,
         logging: false,
+        imageTimeout: 0,
       });
       
-      // Convert canvas to blob and download
-      canvas.toBlob((blob: Blob) => {
-        if (!blob) {
-          setShareMsg("❌ Failed to generate image. Please try again.");
-          setTimeout(() => setShareMsg(""), 4000);
-          return;
-        }
-        
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = `hackbaroda-2026-${Date.now()}.png`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-        
-        setShareMsg("✓ Poster downloaded successfully!");
-        setTimeout(() => setShareMsg(""), 3000);
-      });
+      // Use toDataURL for better browser compatibility
+      const dataUrl = canvas.toDataURL("image/png");
+      const link = document.createElement("a");
+      link.href = dataUrl;
+      link.download = `hackbaroda-2026-${Date.now()}.png`;
+      link.click();
+      
+      setShareMsg("✓ Poster downloaded successfully!");
+      setTimeout(() => setShareMsg(""), 3000);
     } catch (error) {
       console.error("Download failed:", error);
-      setShareMsg("❌ Download failed. Please try again or check your browser console.");
+      setShareMsg("❌ Download failed. Please try again.");
       setTimeout(() => setShareMsg(""), 4000);
     } finally {
       setExporting(false);

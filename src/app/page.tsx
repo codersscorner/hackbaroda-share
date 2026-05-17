@@ -8,30 +8,7 @@ Big thanks to Coders Corner for organizing this incredible event 💻
 See you in Vadodara on 7th June!
 #HackBaroda2026 #CodersCorner #Hackathon #Innovation #FinalRound`;
 
-const PERKS = [
-  { emoji: "💰", title: "Win from a ₹50,000+ Prize Pool", sub: "Grand rewards for the champions." },
-  { emoji: "🤖", title: "Premium AI Tools & Credits", sub: "Exclusive APIs to supercharge innovation." },
-  { emoji: "🤝", title: "Exclusive Networking", sub: "Connect with India's most elite builders." },
-  { emoji: "🎒", title: "Premium Swags & Kits", sub: "Bespoke merchandise worth ₹2000+ for all." },
-];
 
-const JOURNEY = [
-  {
-    num: "I.",
-    title: "Ideation",
-    desc: "Pitch your vision. Focus on rapid innovation and tangible real-world impact.",
-  },
-  {
-    num: "II.",
-    title: "Selection",
-    desc: "Only the absolute best advance. Vetted for feasibility, architecture, and execution.",
-  },
-  {
-    num: "III.",
-    title: "Build",
-    desc: "Build continuously alongside India's most elite developers in Vadodara.",
-  },
-];
 
 export default function Page() {
   const posterRef = useRef<HTMLDivElement>(null);

@@ -50,16 +50,18 @@ export default function Page() {
       }
       
       const canvas = await html2canvas(posterRef.current, {
-        scale: 2,
+        scale: 3,
         useCORS: true,
         allowTaint: true,
         backgroundColor: null,
         logging: false,
         imageTimeout: 0,
+        width: posterRef.current.offsetWidth,
+        height: posterRef.current.offsetHeight,
       });
       
-      // Use toDataURL for better browser compatibility
-      const dataUrl = canvas.toDataURL("image/png");
+      // Use toDataURL with maximum quality
+      const dataUrl = canvas.toDataURL("image/png", 1.0);
       const link = document.createElement("a");
       link.href = dataUrl;
       link.download = `hackbaroda-2026-${Date.now()}.png`;

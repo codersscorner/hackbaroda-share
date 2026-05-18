@@ -4,9 +4,13 @@ import { useRef, useState, useCallback } from "react";
 
 const SHARE_TEXT = `Excited to share that I, {LEADER}, along with Team {TEAM}, have been selected for the Final Round of HackBaroda 2026 🚀
 Looking forward to showcasing our idea, connecting with amazing builders, and experiencing Gujarat's Largest Hackathon ⚡
-Big thanks to Coders Corner for organizing this incredible event 💻
+
+Big thanks to @Coders Corner, @Harsh Soni, and @Mann Dosi for organizing this incredible event 💻
+
 See you in Vadodara on 7th June!
+
 #HackBaroda2026 #CodersCorner #Hackathon #Innovation #FinalRound`;
+
 
 
 
@@ -30,7 +34,7 @@ export default function Page() {
     try {
       // Load html2canvas from window if available, otherwise fetch from CDN
       let html2canvas: any;
-      
+
       if (typeof window !== "undefined" && (window as any).html2canvas) {
         html2canvas = (window as any).html2canvas;
       } else {
@@ -38,7 +42,7 @@ export default function Page() {
         const script = document.createElement("script");
         script.src = "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js";
         script.async = true;
-        
+
         await new Promise((resolve, reject) => {
           script.onload = () => {
             html2canvas = (window as any).html2canvas;
@@ -48,7 +52,7 @@ export default function Page() {
           document.head.appendChild(script);
         });
       }
-      
+
       const canvas = await html2canvas(posterRef.current, {
         scale: 3,
         useCORS: true,
@@ -59,14 +63,14 @@ export default function Page() {
         width: posterRef.current.offsetWidth,
         height: posterRef.current.offsetHeight,
       });
-      
+
       // Use toDataURL with maximum quality
       const dataUrl = canvas.toDataURL("image/png", 1.0);
       const link = document.createElement("a");
       link.href = dataUrl;
       link.download = `hackbaroda-2026-${Date.now()}.png`;
       link.click();
-      
+
       setShareMsg("✓ Poster downloaded successfully!");
       setTimeout(() => setShareMsg(""), 3000);
     } catch (error) {
@@ -79,7 +83,7 @@ export default function Page() {
   }, []);
 
   const getShareText = () =>
-    SHARE_TEXT.replace("{LEADER}", leader || "my team leader").replace("{TEAM}", team || "our team");
+    SHARE_TEXT.replace("{LEADER}", leader || "name").replace("{TEAM}", team || "our team");
 
   const handleShare = async (platform: string) => {
     const text = getShareText();
@@ -87,17 +91,20 @@ export default function Page() {
     const encodedUrl = encodeURIComponent("https://hackbaroda.vercel.app");
 
     if (platform === "linkedin") {
-      // LinkedIn only supports URL sharing
-      await navigator.clipboard.writeText(text);
+      const linkedInText = encodeURIComponent(getShareText());
 
       window.open(
-        `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`,
+        `https://www.linkedin.com/feed/?shareActive=true&text=${linkedInText}`,
         "_blank",
         "noopener,noreferrer,width=700,height=600"
       );
 
-      setShareMsg("✓ Caption copied! Paste it into your LinkedIn post.");
-      setTimeout(() => setShareMsg(""), 4000);
+      setShareMsg(
+        "✓ LinkedIn opened with prefilled caption. Upload your poster image."
+      );
+
+      setTimeout(() => setShareMsg(""), 5000);
+
       return;
     }
 
@@ -168,7 +175,7 @@ export default function Page() {
             <div className="bg-[rgba(255,252,240,0.92)] border border-[#d9c49a] rounded-xl p-6 shadow-md">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
                 <label className="flex flex-col gap-2">
-                  <span className="text-[#b8860b] text-[9px] tracking-[3px] uppercase font-sans">Team Leader Name</span>
+                  <span className="text-[#b8860b] text-[9px] tracking-[3px] uppercase font-sans">Name</span>
                   <input
                     value={leader}
                     onChange={(e) => setLeader(e.target.value)}
@@ -247,7 +254,7 @@ export default function Page() {
                 }}
               >
                 {"Excited to share that I, "}
-                <span className="font-bold">{leader || "[Team Leader Name]"}</span>
+                <span className="font-bold">{leader || "[Name]"}</span>
                 {", along with Team "}
                 <span className="font-bold">{team || "[Team Name]"}</span>
                 {", have been selected for the Final Round of "}
@@ -305,7 +312,7 @@ export default function Page() {
                 LinkedIn
               </button>
 
-              <button
+              {/* <button
                 onClick={() => handleShare("twitter")}
                 className="flex items-center justify-center gap-2 bg-[rgba(0,0,0,0.05)] border border-[rgba(0,0,0,0.15)] rounded-lg px-5 py-2.5 text-[#2a0e00] text-xs font-semibold font-sans hover:bg-[rgba(0,0,0,0.1)] transition-colors flex-1 min-w-[130px]"
               >
@@ -323,7 +330,7 @@ export default function Page() {
                   <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
                 </svg>
                 Instagram Story
-              </button>
+              </button> */}
             </div>
 
             {shareMsg && (
